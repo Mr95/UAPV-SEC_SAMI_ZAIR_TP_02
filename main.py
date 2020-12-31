@@ -2,6 +2,8 @@ import argparse
 import png
 
 NB_OF_BITS = 8
+NB_PX_PER_CHAR = 2
+MAX_RGB = 255
 
 def base10ToByte(val):  
     res = bin(val).replace("b", "") 
@@ -16,6 +18,56 @@ def getPixelList(path):
         pix_list.append(list(row))
     return pix_list
 
+def isEven(v):
+    return int(v)%2 == 0
+
+def hideMessageAlgo(pix_list,asciiBinary):
+    cptB = cptC = 0
+    i=0
+    while i<len(pix_list):
+        j=0
+        while j<len(pix_list[i]):
+            if(cptB >= NB_OF_BITS):
+                if(cptC+1 < len(asciiBinary)):
+                    cptC += 1
+                    cptB = 0
+                    if(not(isEven(pix_list[i][j]))): 
+                        if(pix_list[i][j] == MAX_RGB):
+                            pix_list[i][j] -= 1
+                        else:
+                            pix_list[i][j] += 1
+                else:
+                    if(isEven(pix_list[i][j])): 
+                        if(pix_list[i][j] == MAX_RGB):
+                            pix_list[i][j] -= 1
+                        else:
+                            pix_list[i][j] += 1
+                    return
+            else:
+                if(isEven(asciiBinary[cptC][cptB])):
+                    if(not(isEven(pix_list[i][j]))): 
+                        if(pix_list[i][j] == MAX_RGB):
+                            pix_list[i][j] -= 1
+                        else:
+                            pix_list[i][j] += 1
+                else:
+                    if(isEven(pix_list[i][j])): 
+                        if(pix_list[i][j] == MAX_RGB):
+                            pix_list[i][j] -= 1
+                        else:
+                            pix_list[i][j] += 1
+                cptB += 1
+            j=j+1
+        i=i+1
+
+def isImageSupportMessage(pix_list,nbpx,stringToHide):
+    return len(stringToHide)*nbpx < len(pix_list)*len(pix_list[0])
+        
+def saveInPng(pix_list,fname):
+    png.from_array(pix_list, 'RGBA').save(fname)
+    print("save done")
+
+
 def main():
 
         stringToHide = input("enter string to hide : ")
@@ -25,4 +77,9 @@ def main():
         pix_list = getPixelList(file_path)
         print('pixels',len(pix_list))
 
+        if(isImageSupportMessage(pix_list,NB_PX_PER_CHAR,stringToHide)):
+            hideMessageAlgo(pix_list,asciiBinary)
+            saveInPng(pix_list,'test.png')
+        else:
+            print("not enougth space")
 main()
