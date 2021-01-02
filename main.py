@@ -67,6 +67,36 @@ def saveInPng(pix_list,fname):
     png.from_array(pix_list, 'RGBA').save(fname)
     print("save done")
 
+def readMeassageAlgo(pix_list):
+    cptB = cptC = 0
+    asciiBinary = [""]
+    i=0
+    while i<len(pix_list):
+        j=0
+        while j<len(pix_list[i]):
+            if(cptB >= NB_OF_BITS):
+                if(isEven(pix_list[i][j])):
+                    cptC = cptC + 1
+                    asciiBinary.append("") 
+                    cptB = 0            
+                else:
+                    return asciiBinary     
+            else:
+                if(not(isEven(pix_list[i][j]))): 
+                    asciiBinary[cptC] = asciiBinary[cptC] + "1"
+                else:
+                    asciiBinary[cptC] = asciiBinary[cptC] + "0"
+                cptB = cptB + 1
+            
+            j=j+1
+        i=i+1
+    return asciiBinary
+
+def decryptBinaryAscii(binary_char_ascii):  
+    str = ""
+    for char in binary_char_ascii:
+        str = str+chr(int(char,2))
+    return str
 
 def main():
 
@@ -82,4 +112,8 @@ def main():
             saveInPng(pix_list,'test.png')
         else:
             print("not enougth space")
+
+        file_path = input("Enter png to decode : ")
+        pix_list = getPixelList(file_path)
+        print("decrypted string: ",decryptBinaryAscii(readMeassageAlgo(pix_list)))
 main()
