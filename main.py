@@ -98,22 +98,37 @@ def decryptBinaryAscii(binary_char_ascii):
         str = str+chr(int(char,2))
     return str
 
+parser = argparse.ArgumentParser()
+parser.add_argument("-f",help="filename")
+parser.add_argument("-w",help="write",action="store_true")
+parser.add_argument("-t",help="text")
+args = parser.parse_args()
+
 def main():
 
-        stringToHide = input("enter string to hide : ")
-        asciiBinary = [base10ToByte(ord(c)) for c in stringToHide]
-        print('ASCII',asciiBinary)
+    file_path = stringToHide = None
+    if(args.f):
+        file_path = args.f
+    else:
         file_path = input("Enter png path : ")
-        pix_list = getPixelList(file_path)
-        print('pixels',len(pix_list))
 
-        if(isImageSupportMessage(pix_list,NB_PX_PER_CHAR,stringToHide)):
-            hideMessageAlgo(pix_list,asciiBinary)
-            saveInPng(pix_list,'test.png')
-        else:
-            print("not enougth space")
-
-        file_path = input("Enter png to decode : ")
+    if not(args.w):
         pix_list = getPixelList(file_path)
         print("decrypted string: ",decryptBinaryAscii(readMeassageAlgo(pix_list)))
+    else:
+    
+       if(args.t):
+            stringToHide = args.t
+       else:    
+            stringToHide = input("enter string to hide : ")
+
+       asciiBinary = [base10ToByte(ord(c)) for c in stringToHide]
+       pix_list = getPixelList(file_path)
+       
+       if(isImageSupportMessage(pix_list,NB_PX_PER_CHAR,stringToHide)):
+            hideMessageAlgo(pix_list,asciiBinary)
+            saveInPng(pix_list,'result.png')
+       else:
+            print("not enougth space")
+
 main()
