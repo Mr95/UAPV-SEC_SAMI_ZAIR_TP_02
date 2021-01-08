@@ -5,22 +5,25 @@ NB_OF_BITS = 8
 NB_PX_PER_CHAR = 2
 MAX_RGB = 255
 
+# return the binary value in 8 bits of ascii
 def base10ToByte(val):  
     res = bin(val).replace("b", "") 
     zerosToAdd = NB_OF_BITS-len(res) 
     return zerosToAdd*"0"+res
 
-
+# this method is for getting pixels of the image
 def getPixelList(path):
     r=png.Reader(path)
     pix_list = []
     for row in r.asRGBA8()[2]:
         pix_list.append(list(row))
     return pix_list
-
+    
+# check if is even number 
 def isEven(v):
     return int(v)%2 == 0
 
+# this method is for hiding the message into the png image
 def hideMessageAlgo(pix_list,asciiBinary):
     cptB = cptC = 0
     i=0
@@ -60,13 +63,16 @@ def hideMessageAlgo(pix_list,asciiBinary):
             j=j+1
         i=i+1
 
+# test if the image support the length of message 
 def isImageSupportMessage(pix_list,nbpx,stringToHide):
     return len(stringToHide)*nbpx < len(pix_list)*len(pix_list[0])
-        
+
+# saving the png image
 def saveInPng(pix_list,fname):
     png.from_array(pix_list, 'RGBA').save(fname)
     print("save done")
 
+# this method is for reading message
 def readMeassageAlgo(pix_list):
     cptB = cptC = 0
     asciiBinary = [""]
@@ -92,6 +98,7 @@ def readMeassageAlgo(pix_list):
         i=i+1
     return asciiBinary
 
+# this method is for decrypting message
 def decryptBinaryAscii(binary_char_ascii):  
     str = ""
     for char in binary_char_ascii:
